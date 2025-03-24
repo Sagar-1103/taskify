@@ -1,0 +1,21 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend for the Task Manager App",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "npx tsc -b && node dist/index.js",
+    "vercel-build":"tsc"
+  },
+  "author": "Sagar Shirgaonkar",
+  "license": "ISC",
+  "dependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.2",
+    "typescript": "^5.8.2"
+  }
+}
