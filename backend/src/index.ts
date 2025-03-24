@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import connectDatabase from "./config/database.config";
 dotenv.config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 
 const startServer = async()=>{
     await connectDatabase();
