@@ -4,7 +4,7 @@ export interface ITask extends Document {
     title:string;
     description:string;
     userId:Types.ObjectId;
-    status: "pending" | "progress" | "completed";
+    status: "Pending" | "In Progress" | "Completed";
     createdAt: Date;
     updatedAt: Date;
 }
@@ -22,8 +22,8 @@ const taskSchema  = new Schema<ITask>({
     },
     status: {
         type: String,
-        enum: ["pending", "progress", "completed"],
-        default: "pending",
+        enum: ["Pending", "In Progress", "Completed"],
+        default: "Pending",
     },
     userId:{
         type:mongoose.Schema.Types.ObjectId,

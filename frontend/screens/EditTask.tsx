@@ -2,33 +2,32 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet } from 'react-native';
 import { Button, RadioButton } from 'react-native-paper';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuth } from '../context/AuthContext';
+import axios from 'axios';
+import { BACKEND_URL } from '../constants/Backend';
 
 const EditTask = ({ route, navigation }: any) => {
   const { task } = route.params;
-
+  const {accessToken} = useAuth();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [status, setStatus] = useState(task.status);
-  const [completed, setCompleted] = useState(task.completed);
 
   const handleUpdateTask = async () => {
-    if (!title || !description) {
-      Alert.alert('Error', 'Please fill in all fields');
-      return;
-    }
-
-    const token = await AsyncStorage.getItem('token');
-    const response = await fetch(`YOUR_BACKEND_URL/tasks/${task.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ title, description, status, completed }),
-    });
-
-    if (response.ok) {
-      Alert.alert('Success', 'Task updated successfully');
-      navigation.goBack();
-    } else {
-      Alert.alert('Error', 'Could not update task');
+    try {
+      if (!title || !description || !status) {
+        Alert.alert('Error', 'Please fill in all fields');
+        return;
+      }
+      const response = await axios.put(`${BACKEND_URL}/tasks/${task._id}`,{title,description,status},{
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
+      })
+      const res = await response.data;
+      if (res.success) {
+        navigation.goBack();
+      }
+    } catch (error:any) {
+      console.log(error.response.data.message);
     }
   };
 

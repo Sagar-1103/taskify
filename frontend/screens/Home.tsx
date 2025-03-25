@@ -36,9 +36,9 @@ const Home = ({ navigation }: any) => {
       );
       const res = await response.data;
       if(res.success){
-        setTasks(res.tasks); // todo :data.tasks
-        const completedTasks = res.tasks.filter((task:any)=>task.status==="completed");
-        const totalCount = res.tasks.length;
+        setTasks(res.data.tasks);
+        const completedTasks = res.data.tasks.filter((task:any)=>task.status==="completed");
+        const totalCount = res.data.tasks.length;
         setTotalTasks(totalCount);
         setCompletedTasks(completedTasks.length);
       }

@@ -27,7 +27,7 @@ const AddTask = ({ navigation }: NavigationProps) => {
 
       const res = await response.data;
       if(res.success){
-        navigation.navigate("Home");
+        navigation.goBack();
       }      
     } catch (error:any) {
       console.log(error.response.data.message);
