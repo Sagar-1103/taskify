@@ -24,10 +24,7 @@ export const createTask = AsyncHandler(async(req:Request,res:Response)=>{
 export const getTasks = AsyncHandler(async(req:Request,res:Response)=>{
     const userId = req.user?._id;
     const tasks = await Task.find({ userId });
-    res.status(200).json({
-        success: true,
-        tasks,
-    });
+    res.status(200).json(new ApiResponse(200,{tasks},"Tasks fetched successfully"));
 })
 
 export const getTask = AsyncHandler(async(req:Request,res:Response)=>{
@@ -43,15 +40,15 @@ export const getTask = AsyncHandler(async(req:Request,res:Response)=>{
 
 export const updateTask = AsyncHandler(async(req:Request,res:Response)=>{
     const { id } = req.params;
-    const { title, description } = req.body;
+    const { title, description,status } = req.body;
 
-    if (!title || !description) {
+    if (!title || !description || !status) {
         throw new ApiError(400, "All fields are required");
     }
 
     const task = await Task.findByIdAndUpdate(
         id,
-        { title, description },
+        { title, description,status },
         { new: true, runValidators: true }
     );
 
