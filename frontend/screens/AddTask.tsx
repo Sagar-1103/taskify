@@ -27,7 +27,10 @@ const AddTask = ({ navigation }: NavigationProps) => {
 
       const res = await response.data;
       if(res.success){
-        navigation.goBack();
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
       }      
     } catch (error:any) {
       console.log(error.response.data.message);

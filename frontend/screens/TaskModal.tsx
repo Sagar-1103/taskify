@@ -1,10 +1,13 @@
+import axios from 'axios';
 import React from 'react';
 import { View, Modal, StyleSheet } from 'react-native';
 import { Card, Text, Title, Button, IconButton } from 'react-native-paper';
+import { BACKEND_URL } from '../constants/Backend';
+import { useAuth } from '../context/AuthContext';
 
 const TaskModal = ({ visible, task,setModalVisible,navigation }: any) => {
   if (!task) return null;
-  console.log(task);
+  const {accessToken} = useAuth();
   
 
   const onEdit = ()=>{
@@ -12,8 +15,25 @@ const TaskModal = ({ visible, task,setModalVisible,navigation }: any) => {
     navigation.navigate('EditTask', { task });
   }
 
-  const onDelete =() => {
-    setModalVisible(false);
+  const onDelete =async() => {
+    try {
+      const response = await axios.delete(`${BACKEND_URL}/tasks/${task._id}`,{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+      const res = await response.data;
+      if(res.success){
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Home" }],
+        });
+        setModalVisible(false);
+      }
+    } catch (error) {
+      console.log();
+  
+    }
     }
 
   return (

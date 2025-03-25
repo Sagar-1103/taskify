@@ -1,55 +1,67 @@
-import React, { useEffect, useState } from 'react';
-import { View, FlatList, RefreshControl, StyleSheet, TouchableOpacity } from 'react-native';
-import { Card, Text, Title, FAB, Checkbox, IconButton, Divider } from 'react-native-paper';
-import TaskModal from './TaskModal';
-import { useAuth } from '../context/AuthContext';
-import { BACKEND_URL } from '../constants/Backend';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import {
+  View,
+  FlatList,
+  RefreshControl,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
+import {
+  Card,
+  Text,
+  Title,
+  FAB,
+  Checkbox,
+  IconButton,
+  Divider,
+} from "react-native-paper";
+import TaskModal from "./TaskModal";
+import { useAuth } from "../context/AuthContext";
+import { BACKEND_URL } from "../constants/Backend";
+import axios from "axios";
 
 const Home = ({ navigation }: any) => {
   const [tasks, setTasks] = useState([]);
-  const {accessToken} = useAuth();
+  const { accessToken } = useAuth();
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [totalTasks,setTotalTasks] = useState(0);
-  const [completedTasks,setCompletedTasks] = useState(0);
-
-  const toggleComplete = (id: number) => {
-   
-  };
+  const [totalTasks, setTotalTasks] = useState(0);
+  const [completedTasks, setCompletedTasks] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
+  const toggleComplete = (id: number) => {};
 
   const openModal = (task: any) => {
     setSelectedTask(task);
     setModalVisible(true);
   };
-
-  // const totalTasks = tasks.length;
-  // const completedTasks = tasks.filter((task) => task.completed).length;
-
-  const fetchTasks = async()=>{
+  const fetchTasks = async () => {
+    setRefreshing(true);
     try {
-      const response = await axios.get(`${BACKEND_URL}/tasks`,{
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-        }
-      );
+      const response = await axios.get(`${BACKEND_URL}/tasks`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       const res = await response.data;
-      if(res.success){
+      if (res.success) {
         setTasks(res.data.tasks);
-        const completedTasks = res.data.tasks.filter((task:any)=>task.status==="completed");
+        const completedTasks = res.data.tasks.filter(
+          (task: any) => task.status === "Completed"
+        );
         const totalCount = res.data.tasks.length;
         setTotalTasks(totalCount);
         setCompletedTasks(completedTasks.length);
       }
-    } catch (error:any) {
+    } catch (error: any) {
       console.log(error.response.data.message);
+    } finally {
+      setRefreshing(false);
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchTasks();
-  },[])
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -57,12 +69,20 @@ const Home = ({ navigation }: any) => {
       <Card style={styles.statsCard}>
         <View style={styles.statsRow}>
           <View style={styles.statBox}>
-            <Text style={styles.statNumber}>{totalTasks}</Text>
-            <Text style={styles.statLabel}>Total Tasks</Text>
+            <Text style={[styles.statNumber, { color: "#4CAF50" }]}>
+              {totalTasks-completedTasks}
+            </Text>
+            <Text style={styles.statLabel}>Active</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: '#4CAF50' }]}>{completedTasks}</Text>
+            <Text style={[styles.statNumber, { color: "#4CAF50" }]}>
+              {completedTasks}
+            </Text>
             <Text style={styles.statLabel}>Completed</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statNumber}>{totalTasks}</Text>
+            <Text style={styles.statLabel}>Total Tasks</Text>
           </View>
         </View>
       </Card>
@@ -70,32 +90,54 @@ const Home = ({ navigation }: any) => {
       <Card style={styles.card}>
         <Title style={styles.title}>Task List</Title>
         <Divider style={styles.divider} />
-        {tasks.length!==0 && <FlatList
+        <FlatList
           data={tasks}
-          keyExtractor={(item:any) => item._id}
+          keyExtractor={(item: any) => item._id}
           renderItem={({ item }) => (
-            <Card style={[styles.taskCard, item.status==="completed" && styles.completedCard]}>
-              <TouchableOpacity onPress={() => openModal(item)} style={styles.row}>
+            <Card
+              style={[
+                styles.taskCard,
+                item.status === "Completed" && styles.completedCard,
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => openModal(item)}
+                style={styles.row}
+              >
                 <Checkbox
-                  status={item.status==='completed' ? 'checked' : 'unchecked'}
+                  status={item.status === "Completed" ? "checked" : "unchecked"}
                   onPress={() => toggleComplete(item.id)}
                   color="#6200ea"
                 />
-                <Text style={[styles.taskTitle, item.status==="completed" && styles.completedText]}>
+                <Text
+                  style={[
+                    styles.taskTitle,
+                    item.status === "Completed" && styles.completedText,
+                  ]}
+                >
                   {item.title}
                 </Text>
               </TouchableOpacity>
             </Card>
           )}
-          refreshControl={<RefreshControl refreshing={false} onRefresh={() => {fetchTasks}} />}
-        />}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>
+                No tasks available. Add a new task to get started!
+              </Text>
+            </View>
+          }
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={fetchTasks} />
+          }
+        />
       </Card>
 
       <FAB
         style={styles.fab}
         icon="plus"
         color="white"
-        onPress={() => navigation.navigate('AddTask')}
+        onPress={() => navigation.navigate("AddTask")}
       />
 
       <TaskModal
@@ -112,44 +154,44 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: "#f9f9f9",
   },
   statsCard: {
     padding: 20,
     borderRadius: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginBottom: 20,
     elevation: 3,
   },
   statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   statBox: {
-    alignItems: 'center',
+    alignItems: "center",
   },
   statNumber: {
     fontSize: 22,
-    fontWeight: 'bold',
-    color: '#6200ea',
+    fontWeight: "bold",
+    color: "#6200ea",
   },
   statLabel: {
     fontSize: 14,
-    color: '#777',
+    color: "#777",
   },
   card: {
     padding: 20,
     borderRadius: 12,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     marginBottom: 60,
     elevation: 5,
   },
   title: {
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 10,
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
   },
   divider: {
     marginBottom: 10,
@@ -158,32 +200,43 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     padding: 15,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     elevation: 3,
   },
   completedCard: {
-    backgroundColor: '#e8f5e9',
+    backgroundColor: "#e8f5e9",
   },
   row: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   taskTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginLeft: 10,
     flex: 1,
   },
   completedText: {
-    textDecorationLine: 'line-through',
-    color: '#888',
+    textDecorationLine: "line-through",
+    color: "#888",
   },
   fab: {
-    position: 'absolute',
+    position: "absolute",
     right: 20,
     bottom: 20,
-    backgroundColor: '#6200ea',
+    backgroundColor: "#6200ea",
     borderRadius: 50,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#777",
+    textAlign: "center",
+    marginTop: 20,
   },
 });
 
