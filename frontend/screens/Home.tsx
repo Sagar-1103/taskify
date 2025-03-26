@@ -6,34 +6,25 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-import {
-  Card,
-  Text,
-  Title,
-  FAB,
-  Checkbox,
-  IconButton,
-  Divider,
-} from "react-native-paper";
-import TaskModal from "./TaskModal";
+import { Card, Text, Title, FAB, Checkbox, Divider } from "react-native-paper";
+import TaskModal from "../components/TaskModal";
 import { useAuth } from "../context/AuthContext";
 import { BACKEND_URL } from "../constants/Backend";
 import axios from "axios";
+import TaskCard from "../components/TaskCard";
 
 const Home = ({ navigation }: any) => {
   const [tasks, setTasks] = useState([]);
   const { accessToken } = useAuth();
   const [selectedTask, setSelectedTask] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [totalTasks, setTotalTasks] = useState(0);
-  const [completedTasks, setCompletedTasks] = useState(0);
   const [refreshing, setRefreshing] = useState(false);
-  const toggleComplete = (id: number) => {};
 
   const openModal = (task: any) => {
     setSelectedTask(task);
     setModalVisible(true);
   };
+
   const fetchTasks = async () => {
     setRefreshing(true);
     try {
@@ -45,12 +36,6 @@ const Home = ({ navigation }: any) => {
       const res = await response.data;
       if (res.success) {
         setTasks(res.data.tasks);
-        const completedTasks = res.data.tasks.filter(
-          (task: any) => task.status === "Completed"
-        );
-        const totalCount = res.data.tasks.length;
-        setTotalTasks(totalCount);
-        setCompletedTasks(completedTasks.length);
       }
     } catch (error: any) {
       console.log(error.response.data.message);
@@ -65,28 +50,6 @@ const Home = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      {/* Task Counter */}
-      <Card style={styles.statsCard}>
-        <View style={styles.statsRow}>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: "#4CAF50" }]}>
-              {totalTasks-completedTasks}
-            </Text>
-            <Text style={styles.statLabel}>Active</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={[styles.statNumber, { color: "#4CAF50" }]}>
-              {completedTasks}
-            </Text>
-            <Text style={styles.statLabel}>Completed</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statNumber}>{totalTasks}</Text>
-            <Text style={styles.statLabel}>Total Tasks</Text>
-          </View>
-        </View>
-      </Card>
-
       <Card style={styles.card}>
         <Title style={styles.title}>Task List</Title>
         <Divider style={styles.divider} />
@@ -94,37 +57,23 @@ const Home = ({ navigation }: any) => {
           data={tasks}
           keyExtractor={(item: any) => item._id}
           renderItem={({ item }) => (
-            <Card
-              style={[
-                styles.taskCard,
-                item.status === "Completed" && styles.completedCard,
-              ]}
-            >
-              <TouchableOpacity
-                onPress={() => openModal(item)}
-                style={styles.row}
-              >
-                <Checkbox
-                  status={item.status === "Completed" ? "checked" : "unchecked"}
-                  onPress={() => toggleComplete(item.id)}
-                  color="#6200ea"
-                />
-                <Text
-                  style={[
-                    styles.taskTitle,
-                    item.status === "Completed" && styles.completedText,
-                  ]}
-                >
-                  {item.title}
-                </Text>
-              </TouchableOpacity>
-            </Card>
+            <TaskCard
+              item={item}
+              openModal={openModal}
+              navigation={navigation}
+            />
           )}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Text style={styles.emptyText}>
-                No tasks available. Add a new task to get started!
-              </Text>
+              {!refreshing ? (
+                <Text style={styles.emptyText}>
+                  No tasks available. Add a new task to get started!
+                </Text>
+              ) : (
+                <Text style={styles.emptyText}>
+                  Loading...
+                </Text>
+              )}
             </View>
           }
           refreshControl={

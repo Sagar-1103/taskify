@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Alert, StyleSheet } from 'react-native';
-import { Button, RadioButton } from 'react-native-paper';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Button } from 'react-native-paper';
 import axios from 'axios';
 import { BACKEND_URL } from '../constants/Backend';
 import { useAuth } from '../context/AuthContext';
@@ -13,15 +12,15 @@ type NavigationProps = {
 const AddTask = ({ navigation }: NavigationProps) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const {accessToken} = useAuth();
+  const {accessToken,showError} = useAuth();
 
   const handleAddTask = async () => {
     if (!title || !description) {
-      Alert.alert('Error', 'Please fill in all fields');
+      showError("Missing Information,Please fill in all fields before submitting.");
       return;
     }
     try {
-      const response = await axios.post(`${BACKEND_URL}/tasks`,{ title, description },{
+      const response = await axios.post(`${BACKEND_URL}/tasks`,{ title,description },{
         headers:{ 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` }
       });
 
@@ -33,7 +32,8 @@ const AddTask = ({ navigation }: NavigationProps) => {
         });
       }      
     } catch (error:any) {
-      console.log(error.response.data.message);
+      console.log(error.response.data);
+      showError(`Unexpected Error,${error.response.data.message}`);
     }
   };
 

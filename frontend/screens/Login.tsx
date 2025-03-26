@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Alert, Image, StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { TextInput, Button, Card, Text, Title } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "../constants/Backend";
@@ -10,9 +10,13 @@ const Login = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const {setAccessToken,setRefreshToken,setUser} = useAuth();
+  const {setAccessToken,setRefreshToken,setUser,showError} = useAuth();
 
   const handleLogin = async () => {
+    if(!email || !password){
+      showError("Missing Information,Please fill in all fields before submitting.");
+      return;
+    }
     setLoading(true);
     try {
       const response  = await axios.post(`${BACKEND_URL}/auth/login`,{email, password},{
@@ -27,8 +31,10 @@ const Login = ({ navigation }: any) => {
         await AsyncStorage.setItem('refreshToken',res.data.refreshToken)
         await AsyncStorage.setItem('user',JSON.stringify(res.data.user))
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error:any) {
+      console.log(error.response.data);
+      const message = error.response.data.message;
+        showError(`Login Failed,${message}.`);
     } finally {
       setLoading(false);
     }

@@ -7,8 +7,12 @@ import { useAuth } from '../context/AuthContext';
 
 const TaskModal = ({ visible, task,setModalVisible,navigation }: any) => {
   if (!task) return null;
-  const {accessToken} = useAuth();
+  const {accessToken,setMessage,setVisible} = useAuth();
   
+  const showError = (message: string) => {
+    setMessage(message);
+    setVisible(true);
+  };
 
   const onEdit = ()=>{
     setModalVisible(false);
@@ -30,9 +34,8 @@ const TaskModal = ({ visible, task,setModalVisible,navigation }: any) => {
         });
         setModalVisible(false);
       }
-    } catch (error) {
-      console.log();
-  
+    } catch (error:any) {
+      showError(`Unexpected Error,${error.response.data.message}`);
     }
     }
 
@@ -46,7 +49,7 @@ const TaskModal = ({ visible, task,setModalVisible,navigation }: any) => {
           </View>
 
           <Text style={styles.taskDescription}>{task.description}</Text>
-          <Text style={styles.taskMeta}>Status: <Text style={styles.statusText}>{task.status==='progress'?"In ":""}{task.status?.slice(0,1).toUpperCase() + task.status?.slice(1,)}</Text></Text>
+          <Text style={styles.taskMeta}>Status: <Text style={styles.statusText}>{task.status?.slice(0,1).toUpperCase() + task.status?.slice(1,)}</Text></Text>
 
           <View style={styles.modalActions}>
             <Button mode="contained" icon="pencil" onPress={onEdit} style={styles.editButton}>

@@ -8,18 +8,18 @@ import { BACKEND_URL } from '../constants/Backend';
 
 const EditTask = ({ route, navigation }: any) => {
   const { task } = route.params;
-  const {accessToken} = useAuth();
+  const {accessToken,showError} = useAuth();
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
-  const [status, setStatus] = useState(task.status);
+  const [status, setStatus] = useState(task.status.slice(0,1).toUpperCase()+task.status.slice(1,));
 
   const handleUpdateTask = async () => {
     try {
       if (!title || !description || !status) {
-        Alert.alert('Error', 'Please fill in all fields');
-        return;
+        showError("Missing Information,Please fill in all fields before submitting.");
+      return;
       }
-      const response = await axios.put(`${BACKEND_URL}/tasks/${task._id}`,{title,description,status},{
+      const response = await axios.put(`${BACKEND_URL}/tasks/${task._id}`,{title,description,status:status?.toLowerCase()},{
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${accessToken}` },
       })
       const res = await response.data;
@@ -31,6 +31,7 @@ const EditTask = ({ route, navigation }: any) => {
       }
     } catch (error:any) {
       console.log(error.response.data.message);
+      showError(`Unexpected Error,${error.response.data.message}`);
     }
   };
 
@@ -61,10 +62,6 @@ const EditTask = ({ route, navigation }: any) => {
           <View style={styles.radioOption}>
             <RadioButton value="Pending" />
             <Text>Pending</Text>
-          </View>
-          <View style={styles.radioOption}>
-            <RadioButton value="In Progress" />
-            <Text>In Progress</Text>
           </View>
           <View style={styles.radioOption}>
             <RadioButton value="Completed" />
@@ -110,7 +107,7 @@ const styles = StyleSheet.create({
   },
   radioContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'space-around',
     marginBottom: 20,
   },
   radioOption: {

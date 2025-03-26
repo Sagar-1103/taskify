@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { View, Alert, StyleSheet } from 'react-native';
 import { TextInput, Button, Card, Text, Title } from 'react-native-paper';
 import { BACKEND_URL } from '../constants/Backend';
+import { useAuth } from '../context/AuthContext';
 
 const Signup = ({ navigation }:any) => {
   const [name, setName] = useState('');
@@ -10,14 +11,28 @@ const Signup = ({ navigation }:any) => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const {showError} = useAuth();
+
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
 
   const handleSignup = async () => {
     if(!name || !email || !password || !confirmPassword){
-      Alert.alert("All fields are required");
+      showError("Missing Information,Please fill in all fields before submitting.");
+      return;
+    }
+    if (!validateEmail(email)) {
+      showError("Invalid Email,Invalid email format.");
+      return;
+    }
+    if (password.length < 6) {
+      showError("Short Password,Password must be at least 6 characters.");
       return;
     }
     if(password !== confirmPassword){
-      Alert.alert("Password do not match");
+      showError("Password Mismatch,Passwords do not match.");
       return;
     }
     setLoading(true);
@@ -32,6 +47,7 @@ const Signup = ({ navigation }:any) => {
       }
     } catch (error:any) {
       console.log(error.response.data.message);
+      showError(`Signup Error,${error.response.data.message}`);
     } finally {
       setLoading(false);
     }

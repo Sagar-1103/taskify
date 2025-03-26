@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Avatar, Button, Card, Text, Divider } from 'react-native-paper';
 import { useAuth } from '../context/AuthContext';
@@ -8,10 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Profile = ({ navigation }: any) => {
   const { user, accessToken, setAccessToken, setRefreshToken, setUser } = useAuth();
-  
-  // Mocked task statistics, replace with actual API call if available
-  const totalTasks = 20;
-  const completedTasks = 12;
+  const [counts,setCounts] = useState<any>(null);
 
   const handleLogout = async () => {
     try {
@@ -36,6 +33,27 @@ const Profile = ({ navigation }: any) => {
     }
   };
 
+  useEffect(()=>{
+    getCounts();
+  },[])
+
+  const getCounts = async()=>{
+    try {
+      const response = await axios.get(`${BACKEND_URL}/tasks/count`,{
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      })
+
+      const res = await response.data;
+      if(res.success){
+        setCounts(res.data.counts);
+      }
+    } catch (error:any) {
+      console.log(error.response.data.message);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Card style={styles.card}>
@@ -51,12 +69,16 @@ const Profile = ({ navigation }: any) => {
         
         <View style={styles.taskStatsContainer}>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{totalTasks}</Text>
-            <Text style={styles.statLabel}>Total Tasks</Text>
+            <Text style={styles.statValue}>{counts?.totalTasks || 0}</Text>
+            <Text style={styles.statLabel}>Active</Text>
           </View>
           <View style={styles.statBox}>
-            <Text style={styles.statValue}>{completedTasks}</Text>
-            <Text style={styles.statLabel}>Completed Tasks</Text>
+            <Text style={styles.statValue}>{counts?.completedTasks || 0}</Text>
+            <Text style={styles.statLabel}>Completed</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statValue}>{counts?.activeTasks || 0}</Text>
+            <Text style={styles.statLabel}>Total</Text>
           </View>
         </View>
       </Card>

@@ -10,6 +10,7 @@ import { Avatar, PaperProvider } from 'react-native-paper';
 import EditTask from './screens/EditTask';
 import Profile from './screens/Profile';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import ErrorModal from './components/ErrorModal';
 
 const Stack = createStackNavigator();
 
@@ -21,6 +22,7 @@ const AuthStack = () => (
 );
 
 const AppStack = () => (
+  <>
   <Stack.Navigator
     screenOptions={({ navigation,route }) => ({
       headerStyle: { backgroundColor: '#6200ea' },
@@ -39,6 +41,7 @@ const AppStack = () => (
     <Stack.Screen name="EditTask" component={EditTask} />
     <Stack.Screen name="Profile" component={Profile} />
   </Stack.Navigator>
+  </>
 );
 
 const RootNavigator = () => {
