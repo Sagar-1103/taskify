@@ -1,23 +1,39 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, StyleSheet,ScrollView } from "react-native";
 import { TextInput, Button, Card, Text, Title } from "react-native-paper";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { BACKEND_URL } from "../constants/Backend";
 import axios from "axios";
 import { useAuth } from "../context/AuthContext";
 
+import LottieView from "lottie-react-native";
+import Animation from "../assets/logo-animation.json";
+
+const LottieAnimation = () => {
+  return (
+    <View style={styles.lottieContainer}>
+      <LottieView 
+        source={Animation}
+        autoPlay
+        loop
+        style={styles.lottie}
+      />
+    </View>
+  );
+};
+
 const Login = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const {setAccessToken,setRefreshToken,setUser,showError} = useAuth();
+  const {setAccessToken,setRefreshToken,setUser,showError,setIsLoading,setToastVisible} = useAuth();
 
   const handleLogin = async () => {
     if(!email || !password){
       showError("Missing Information,Please fill in all fields before submitting.");
       return;
     }
-    setLoading(true);
+    setToastVisible(true);
+    setIsLoading(true);
     try {
       const response  = await axios.post(`${BACKEND_URL}/auth/login`,{email, password},{
         headers: { "Content-Type": "application/json" }
@@ -36,13 +52,15 @@ const Login = ({ navigation }: any) => {
       const message = error.response.data.message;
         showError(`Login Failed,${message}.`);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+      setToastVisible(false);
     }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.appName}>Taskify</Text>
+      <LottieAnimation/>
 
       <Card style={styles.card}>
         <Title style={styles.title}>Welcome Back!</Title>
@@ -68,8 +86,6 @@ const Login = ({ navigation }: any) => {
         <Button
           mode="contained"
           onPress={handleLogin}
-          loading={loading}
-          disabled={loading}
           style={styles.loginButton}
         >
           Login
@@ -81,7 +97,7 @@ const Login = ({ navigation }: any) => {
           Don't have an account? <Text onPress={() => navigation.navigate("Signup")} style={styles.signupText}>Sign up</Text>
         </Text>
       </Card>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -135,6 +151,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#6200ea",
     paddingVertical: 5,
     borderRadius: 8,
+  },
+  lottieContainer: {
+    width: "100%",
+    alignItems: "center",
+  },
+  lottie: {
+    width: 180,
+    height: 180,
   },
   orText: {
     textAlign: "center",

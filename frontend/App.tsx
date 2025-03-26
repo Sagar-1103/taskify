@@ -10,7 +10,8 @@ import { Avatar, PaperProvider } from 'react-native-paper';
 import EditTask from './screens/EditTask';
 import Profile from './screens/Profile';
 import { AuthProvider, useAuth } from './context/AuthContext';
-import ErrorModal from './components/ErrorModal';
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import ChangePassword from './screens/ChangePassword';
 
 const Stack = createStackNavigator();
 
@@ -29,9 +30,10 @@ const AppStack = () => (
       headerTitleStyle: { fontSize: 22, fontWeight: 'bold', color: '#fff' },
       headerTitleAlign: 'center',
       headerTitle: 'Taskify',
+      headerTintColor: '#fff',
       headerRight: () =>  route.name !== 'Profile' ? (
         <TouchableOpacity onPress={() => navigation.navigate('Profile')}>
-          <Avatar.Icon size={50} icon="account" style={styles.avatar} />
+          <Avatar.Icon size={42} icon="account" style={styles.avatar} />
         </TouchableOpacity>
       ) : null,
     })}
@@ -40,6 +42,7 @@ const AppStack = () => (
     <Stack.Screen name="AddTask" component={AddTask} />
     <Stack.Screen name="EditTask" component={EditTask} />
     <Stack.Screen name="Profile" component={Profile} />
+    <Stack.Screen name="ChangePassword" component={ChangePassword} />
   </Stack.Navigator>
   </>
 );
@@ -56,11 +59,13 @@ const RootNavigator = () => {
 
 export default function App() {
   return (
+    <SafeAreaProvider>
     <AuthProvider>
       <PaperProvider>
         <RootNavigator />
       </PaperProvider>
     </AuthProvider>
+    </SafeAreaProvider>
   );
 }
 
@@ -68,5 +73,8 @@ export default function App() {
 const styles = StyleSheet.create({
   avatar: {
     backgroundColor: '#6200ea',
+    borderWidth:2,
+    marginHorizontal:8,
+    borderColor:"#A9A9A9"
   },
 });

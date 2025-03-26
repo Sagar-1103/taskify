@@ -8,6 +8,7 @@ import {
 } from "react";
 import ErrorModal from "../components/ErrorModal";
 import { jwtDecode } from "jwt-decode";
+import Toast from "../components/Toast";
 
 interface AuthContextTypes {
   user: any;
@@ -19,8 +20,11 @@ interface AuthContextTypes {
   visible: boolean;
   message: string;
   setVisible: (state:boolean) => void;
+  setToastVisible: (state:boolean) => void;
   setMessage: (msg:string) => void;
   showError:(msg:string) => void;
+  isLoading:boolean;
+  setIsLoading:(state:boolean)=>void;
 }
 
 const AuthContext = createContext<AuthContextTypes>({
@@ -31,10 +35,14 @@ const AuthContext = createContext<AuthContextTypes>({
   setAccessToken: () => {},
   setRefreshToken: () => {},
   setVisible: () => {},
+  setToastVisible: () => {},
   setMessage: () => {},
   showError: () => {},
+  setIsLoading:()=>{},
   visible: false,
   message: "",
+  isLoading:false,
+
 });
 
 interface AuthProviderProps {
@@ -46,7 +54,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [visible, setVisible] = useState<boolean>(false);
+  const [toastVisible, setToastVisible] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const showError = (message: string) => {
     setMessage(message);
@@ -99,10 +109,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         message,
         setMessage,
         showError,
+        setIsLoading,
+        isLoading,
+        setToastVisible
       }}
     >
       {children}
       <ErrorModal visible={visible} message={message} onClose={() => setVisible(false)} />
+      <Toast
+        message={message}
+        visible={toastVisible}
+        onDismiss={() => setToastVisible(false)}
+        isLoading={isLoading}
+      />
     </AuthContext.Provider>
   );
 };
