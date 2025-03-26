@@ -1,7 +1,7 @@
 # **Project Links**
 
-* **Backend URL:** **[Taskify-Backend-Link](https://taskify-backend-eight.vercel.app)**
-* **Expo Go APK Link: [Taskify-Frontend-Link](https://expo.dev/accounts/sagar1103/projects/frontend/builds/8a990062-7119-469e-9761-092f7be8645b)**
+* **Backend URL:** **[Taskify-Backend](https://taskify-backend-eight.vercel.app)**
+* **Expo Go APK Link: [Taskify-Frontend](https://expo.dev/accounts/sagar1103/projects/frontend/builds/8a990062-7119-469e-9761-092f7be8645b)**
 
 # **Taskify Setup Guide**
 
@@ -15,7 +15,7 @@ This guide will help you set up the **Expo** React Native app and also the **Exp
    git clone https://github.com/Sagar-1103/taskify.git
    cd taskify/frontend
    ```
-2. Clone the Repository
+2. Install Dependencies
 
    ```
    npx expo install
