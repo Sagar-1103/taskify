@@ -1,12 +1,11 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, TouchableOpacity } from 'react-native';
 import Signup from './screens/Signup';
 import Login from './screens/Login';
 import Home from './screens/Home';
 import AddTask from './screens/AddTask';
 import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
-import { Avatar, PaperProvider } from 'react-native-paper';
+import { Provider as PaperProvider, Avatar } from "react-native-paper";
 import EditTask from './screens/EditTask';
 import Profile from './screens/Profile';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -14,7 +13,6 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import ChangePassword from './screens/ChangePassword';
 
 const Stack = createStackNavigator();
-
 const AuthStack = () => (
   <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="Login" component={Login} />
@@ -61,7 +59,7 @@ export default function App() {
   return (
     <SafeAreaProvider>
     <AuthProvider>
-      <PaperProvider>
+      <PaperProvider >
         <RootNavigator />
       </PaperProvider>
     </AuthProvider>

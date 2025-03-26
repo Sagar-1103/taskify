@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, ScrollView } from 'react-native';
 import { Button, RadioButton } from 'react-native-paper';
 import axios from 'axios';
 import { BACKEND_URL } from '../constants/Backend';
@@ -57,7 +57,7 @@ const EditTask = ({ route, navigation }: any) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <LottieAnimation />
 
       <Text style={styles.header}>Edit Task</Text>
@@ -98,7 +98,7 @@ const EditTask = ({ route, navigation }: any) => {
       <Button mode="contained" onPress={handleUpdateTask} style={styles.button} labelStyle={styles.buttonText}>
         Update Task
       </Button>
-    </View>
+    </ScrollView>
   );
 };
 

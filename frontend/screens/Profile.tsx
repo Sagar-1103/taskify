@@ -74,7 +74,7 @@ const Profile = ({ navigation }: any) => {
     <View style={styles.container}>
       <Card style={styles.card}>
         <TouchableOpacity style={styles.avatarContainer}>
-          <Avatar.Icon size={120} icon="account-circle" style={styles.avatar} />
+          <Avatar.Icon color="#ffffff" size={120} icon="account-circle" style={styles.avatar} />
         </TouchableOpacity>
 
         <Card.Content style={styles.userInfoContent}>
@@ -98,6 +98,7 @@ const Profile = ({ navigation }: any) => {
           style={[styles.actionButton, styles.changePasswordButton]}
           labelStyle={styles.actionButtonText}
           onPress={handleChangePassword}
+          textColor='white'
         >
           Change Password
         </Button>
@@ -107,6 +108,7 @@ const Profile = ({ navigation }: any) => {
           style={[styles.actionButton, styles.logoutButton]}
           labelStyle={styles.actionButtonText}
           onPress={handleLogout}
+          textColor='white'
         >
           Logout
         </Button>

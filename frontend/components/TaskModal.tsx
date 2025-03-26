@@ -21,6 +21,7 @@ const TaskModal = ({ visible, task, setModalVisible, navigation }: any) => {
   };
 
   const onDelete = async () => {
+    setModalVisible(false);
     setToastVisible(true);
     setIsLoading(true);
     try {
@@ -29,7 +30,6 @@ const TaskModal = ({ visible, task, setModalVisible, navigation }: any) => {
       });
       if (response.data.success) {
         navigation.reset({ index: 0, routes: [{ name: "Home" }] });
-        setModalVisible(false);
         setToastVisible(true);
         setMessage("Task deleted successfully");
       }
@@ -62,10 +62,10 @@ const TaskModal = ({ visible, task, setModalVisible, navigation }: any) => {
           </Text>
 
           <View style={styles.modalActions}>
-            <Button mode="contained" icon="pencil" onPress={onEdit} style={styles.editButton}>
+            <Button textColor='white' mode="contained" icon="pencil" onPress={onEdit} style={styles.editButton}>
               Edit
             </Button>
-            <Button mode="contained" icon="delete" buttonColor="#d32f2f" onPress={onDelete} style={styles.deleteButton}>
+            <Button textColor='white' mode="contained" icon="delete" buttonColor="#d32f2f" onPress={onDelete} style={styles.deleteButton}>
               Delete
             </Button>
           </View>

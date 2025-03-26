@@ -25,7 +25,7 @@ const LottieAnimation = () => {
 const Login = ({ navigation }: any) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const {setAccessToken,setRefreshToken,setUser,showError,setIsLoading,setToastVisible} = useAuth();
+  const {setAccessToken,setRefreshToken,setUser,showError,setIsLoading,setToastVisible,setMessage} = useAuth();
 
   const handleLogin = async () => {
     if(!email || !password){
@@ -40,12 +40,16 @@ const Login = ({ navigation }: any) => {
       })
       const res = await response.data;
       if (res.success) {
+        setToastVisible(true);
+        setMessage("You have logged in to your account");
         setAccessToken(res.data.accessToken);
         setRefreshToken(res.data.refreshToken);
+
         setUser(res.data.user);
-        await AsyncStorage.setItem('accessToken',res.data.accessToken)
-        await AsyncStorage.setItem('refreshToken',res.data.refreshToken)
-        await AsyncStorage.setItem('user',JSON.stringify(res.data.user))
+        await AsyncStorage.setItem('accessToken',res.data.accessToken);
+        await AsyncStorage.setItem('refreshToken',res.data.refreshToken);
+        await AsyncStorage.setItem('user',JSON.stringify(res.data.user));
+
       }
     } catch (error:any) {
       console.log(error.response.data);
@@ -53,7 +57,6 @@ const Login = ({ navigation }: any) => {
         showError(`Login Failed,${message}.`);
     } finally {
       setIsLoading(false);
-      setToastVisible(false);
     }
   };
 
@@ -73,6 +76,8 @@ const Login = ({ navigation }: any) => {
           mode="outlined"
           style={styles.input}
           autoCapitalize="none"
+          textColor="black"
+          theme={{ colors: { primary: "#6200ea", onSurfaceVariant: "#6200ea" } }}
         />
         <TextInput
           label="Password"
@@ -81,12 +86,15 @@ const Login = ({ navigation }: any) => {
           secureTextEntry
           mode="outlined"
           style={styles.input}
+          theme={{ colors: { primary: "#6200ea", onSurfaceVariant: "#6200ea" } }}
+          textColor="black"
         />
 
         <Button
           mode="contained"
           onPress={handleLogin}
           style={styles.loginButton}
+          textColor="white"
         >
           Login
         </Button>
@@ -175,6 +183,7 @@ const styles = StyleSheet.create({
   signupButton: {
     marginTop: 15,
     textAlign: "center",
+    color:"black"
   },
   signupText: {
     color: "#6200ea",
